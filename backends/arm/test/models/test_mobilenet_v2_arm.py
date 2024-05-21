@@ -62,7 +62,7 @@ class TestMobileNetV2(unittest.TestCase):
             .to_executorch()
         )
         if common.TOSA_REF_MODEL_INSTALLED:
-            tester.run_method_and_compare_outputs()
+            tester.run_method_and_compare_outputs(inputs=self.model_inputs)
         else:
             logger.warning(
                 "TOSA ref model tool not installed, skip numerical correctness tests"

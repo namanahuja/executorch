@@ -62,7 +62,7 @@ class TestAvgPool2d(unittest.TestCase):
             .to_executorch()
         )
         if common.TOSA_REF_MODEL_INSTALLED:
-            tester.run_method_and_compare_outputs()
+            tester.run_method_and_compare_outputs(inputs=test_data)
         else:
             logger.warning(
                 "TOSA ref model tool not installed, skip numerical correctness tests"
@@ -88,7 +88,7 @@ class TestAvgPool2d(unittest.TestCase):
             .to_executorch()
         )
         if common.TOSA_REF_MODEL_INSTALLED:
-            tester.run_method_and_compare_outputs(qtol=1)
+            tester.run_method_and_compare_outputs(inputs=test_data, qtol=1)
         else:
             logger.warning(
                 "TOSA ref model tool not installed, skip numerical correctness tests"
