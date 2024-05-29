@@ -519,7 +519,7 @@ def executorch_generated_lib(
             compiler_flags = ["-Wno-global-constructors"] + compiler_flags,
             deps = [
                 "//executorch/runtime/kernel:operator_registry",
-                "//executorch/kernels/prim_ops:prim_ops_registry" + aten_suffix,
+                #"//executorch/kernels/prim_ops:prim_ops_registry" + aten_suffix,
                 "//executorch/runtime/core:evalue" + aten_suffix,
                 "//executorch/codegen:macros",
             ] + deps + kernel_deps,
