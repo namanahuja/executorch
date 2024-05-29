@@ -485,30 +485,52 @@ class Event:
 
                 profile_event = profile_events[0]
 
+                def calculate_elapsed_time(start_time, end_time):
+                    # We're assuming if there's a wraparound in the time values, then
+                    # the time representation of that platform only contains 32 bits.
+                    # This should be fine for now, but ideally we should source the max
+                    # time value from the platform using etdump.
+                    max_uint64 = 2**32
+                    if start_time > end_time:
+                        # Handle wraparound
+                        elapsed_time = (max_uint64 - start_time) + end_time
+                    else:
+                        # Normal case
+                        elapsed_time = end_time - start_time
+                    return elapsed_time
+
                 # Scale factor should only be applied to non-delegated ops
                 if (
                     ret_event.is_delegated_op
                     and ret_event._delegate_time_scale_converter is not None
                 ):
-                    scaled_time = ret_event._delegate_time_scale_converter(
-                        ret_event.name,
-                        profile_event.end_time,
-                        # pyre-ignore
-                    ) - ret_event._delegate_time_scale_converter(
-                        ret_event.name, profile_event.start_time
+                    scaled_time = calculate_elapsed_time(
+                        ret_event._delegate_time_scale_converter(
+                            ret_event.name, profile_event.start_time
+                        ),
+                        ret_event._delegate_time_scale_converter(  # pyre-ignore
+                            ret_event.name,
+                            profile_event.end_time,
+                        ),
                     )
                 # If it's not a delegated op then we can just use the raw time values
                 # and then scale them according to the scale factor that was passed in.
                 elif not ret_event.is_delegated_op:
                     scaled_time = (
-                        float(profile_event.end_time - profile_event.start_time)
+                        float(
+                            calculate_elapsed_time(
+                                profile_event.start_time, profile_event.end_time
+                            )
+                        )
                         / scale_factor
                     )
                 # If there was no scale factor passed in just take a difference of the
                 # end and start times.
                 else:
                     scaled_time = float(
-                        profile_event.end_time - profile_event.start_time
+                        calculate_elapsed_time(
+                            profile_event.start_time, profile_event.end_time
+                        )
                     )
 
                 data.append(scaled_time)
